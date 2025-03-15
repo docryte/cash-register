@@ -1,4 +1,5 @@
-FROM python:3.8-slim
+FROM python:3.13-slim
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 WORKDIR /app
 
@@ -6,15 +7,13 @@ RUN apt-get update && apt-get install -y \
     wkhtmltopdf \
     && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt .
+COPY pyproject.toml .
+COPY uv.lock .
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN uv v && uv sync --frozen
 
 COPY . .
 
 RUN mkdir -p /app/logs
 
-RUN useradd -m appuser && chown -R appuser:appuser /app
-USER appuser
-
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "project.wsgi:application"] 
+CMD ["uv", "run", "project/manage.py", "runserver", "0.0.0.0:8000"] 
