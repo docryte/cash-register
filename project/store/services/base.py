@@ -9,7 +9,7 @@ class PDFServiceInterface(ABC):
     """
 
     @abstractmethod
-    def convert_html_to_pdf(self, html: str) -> bytes:
+    def convert_html_to_pdf(self, html_content: str, output_file: str) -> bytes:
         """
         Конвертирует HTML-строку в PDF файл.
         """
@@ -22,7 +22,7 @@ class HTMLServiceInterface(ABC):
     """
 
     @abstractmethod
-    def render_to_string(self, html_template: str, context: dict) -> str:
+    def render_to_string(self, template_name: str, context: Dict[str, Any]) -> str:
         """
         Преобразовывает шаблон с контекстом (переменными для шаблона) в строку HTML
         """
