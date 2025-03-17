@@ -1,18 +1,18 @@
-import os
-import subprocess
+from pathlib import Path
 from django.conf import settings
 from .base import PDFServiceInterface
+import pdfkit
 
 
 class WkhtmltopdfConverter(PDFServiceInterface):
     """
     Конвертер HTML в PDF с использованием wkhtmltopdf.
     """
+
     def __init__(self, wkhtmltopdf_path: str = None):
         self.wkhtmltopdf_path = wkhtmltopdf_path or settings.WKHTMLTOPDF_PATH
 
-
-    def convert_html_to_pdf(self, html_content: str, output_path: str) -> str:
+    def convert_html_to_pdf(self, html_content: str, output_file: str) -> str:
         """
         Конвертирует HTML в PDF файл.
 
@@ -27,37 +27,11 @@ class WkhtmltopdfConverter(PDFServiceInterface):
             OSError: Если wkhtmltopdf не установлен или недоступен
             ValueError: Если конвертация не удалась
         """
-        if not os.path.exists(self.wkhtmltopdf_path):
-            raise OSError(f"wkhtmltopdf не найден по пути: {self.wkhtmltopdf_path}")
-
-        temp_html = output_path.replace(".pdf", ".html")
-        with open(temp_html, "w", encoding="utf-8") as f:
-            f.write(html_content)
-
+        Path(output_file).parent.mkdir(parents=True, exist_ok=True)
         try:
-            cmd = [
-                self.wkhtmltopdf_path,
-                "--encoding",
-                "utf-8",
-                "--margin-top",
-                "0",
-                "--margin-bottom",
-                "0",
-                "--margin-left",
-                "0",
-                "--margin-right",
-                "0",
-                temp_html,
-                output_path,
-            ]
+            config = pdfkit.configuration(wkhtmltopdf=self.wkhtmltopdf_path or "")
+            pdfkit.from_string(html_content, output_file, configuration=config)
+        except Exception as err:
+            raise ValueError(f"Не удалось сконвертировать HTML в PDF: {err}")
 
-            result = subprocess.run(cmd, capture_output=True, text=True)
-
-            if result.returncode != 0:
-                raise ValueError(f"Ошибка конвертации: {result.stderr}")
-
-            return output_path
-
-        finally:
-            if os.path.exists(temp_html):
-                os.remove(temp_html)
+        return output_file
