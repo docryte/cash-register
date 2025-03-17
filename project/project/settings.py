@@ -53,14 +53,10 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.middleware.security.SecurityMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware"
 ]
-
-if not DEBUG:
-    MIDDLEWARE = [
-        "django.middleware.security.SecurityMiddleware",
-        *MIDDLEWARE,
-        "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    ]
 
 ROOT_URLCONF = "project.urls"
 
@@ -174,4 +170,12 @@ REST_FRAMEWORK = {
         "anon": "100/day",
         "user": "100/day",
     },
+}
+
+SWAGGER_SETTINGS = {
+    "LOGIN_URL": None,
+    "LOGOUT_URL": None,
+    "USE_SESSION_AUTH": False,
+    "SECURITY_DEFINITIONS": {"Basic": {"type": "basic"}},
+    "PUBLIC": True,
 }
