@@ -12,6 +12,8 @@ ENV SECURE_HSTS_PRELOAD="True"
 ENV SECURE_BROWSER_XSS_FILTER="True"
 ENV SECURE_CONTENT_TYPE_NOSNIFF="True"
 
+EXPOSE 8000
+
 WORKDIR /app
 
 RUN apt-get update && apt-get install -y \
@@ -27,4 +29,8 @@ COPY . .
 
 RUN mkdir -p /app/logs
 
-CMD ["uv", "run", "project/manage.py", "runserver", "0.0.0.0:8000"]
+RUN uv run project/manage.py makemigrations
+RUN uv run project/manage.py migrate
+RUN uv run project/manage.py collectstatic --noinput
+
+CMD ["uv", "run", "gunicorn", "--bind=0.0.0.0:8000", "--pythonpath=project", "project.wsgi"]
