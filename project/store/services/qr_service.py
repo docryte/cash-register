@@ -1,5 +1,4 @@
 from io import BytesIO
-from typing import Optional
 import qrcode
 from .base import QRServiceInterface
 
@@ -8,27 +7,6 @@ class QRGenerator(QRServiceInterface):
     """
     Сервис для генерации QR-кодов.
     """
-
-    def __init__(
-        self,
-        version: Optional[int] = None,
-        error_correction: int = qrcode.constants.ERROR_CORRECT_L,
-        box_size: int = 10,
-        border: int = 4,
-    ):
-        """
-        Инициализация генератора QR-кодов.
-
-        Args:
-            version: Версия QR-кода (1-40)
-            error_correction: Уровень коррекции ошибок
-            box_size: Размер одного модуля в пикселях
-            border: Размер отступа в модулях
-        """
-        self.version = version
-        self.error_correction = error_correction
-        self.box_size = box_size
-        self.border = border
 
     def generate(self, data: str) -> BytesIO:
         """
