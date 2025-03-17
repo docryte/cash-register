@@ -123,12 +123,12 @@ class ReceiptService(ReceiptServiceInterface):
         total = self._calculate_total(items)
         context = self.context_builder.build_context(items, total)
 
-        filename = f"receipt_{context['receipt_id']}.pdf"
+        filename = f"receipt_{context['receipt_id']}"
 
         pdf_path = self._generate_pdf_path(filename)
         html_content = self.html_service.render_to_string("receipt.html", context)
         self.pdf_service.convert_html_to_pdf(html_content, pdf_path)
-        relative_pdf_uri = settings.MEDIA_URL + filename
+        relative_pdf_uri = settings.MEDIA_URL + filename + ".pdf"
 
         return ReceiptData(
             receipt_id=context["receipt_id"],
