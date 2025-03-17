@@ -21,12 +21,7 @@ class QRGenerator(QRServiceInterface):
         Raises:
             ValueError: Если данные слишком длинные для выбранной версии
         """
-        qr = qrcode.QRCode(
-            version=self.version,
-            error_correction=self.error_correction,
-            box_size=self.box_size,
-            border=self.border,
-        )
+        qr = qrcode.QRCode()
 
         qr.add_data(data)
         qr.make(fit=True)
